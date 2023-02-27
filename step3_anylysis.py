@@ -1,6 +1,6 @@
 
 
-def step3_anylysis(ED_data_zxy_np, ES_data_zxy_np, ED_mask_zxy_np, ES_mask_zxy_np, info):
+def step3_analysis(ED_data_zxy_np, ES_data_zxy_np, ED_mask_zxy_np, ES_mask_zxy_np, info):
     '''
     This function is for extraction of required valeus for analysis of heard.
     It shoud measure ejection fraction and myocard_volume. It can used semgentation mask 
@@ -29,8 +29,8 @@ def step3_anylysis(ED_data_zxy_np, ES_data_zxy_np, ED_mask_zxy_np, ES_mask_zxy_n
     '''
     
     
-    ejection_fraction = 5
-    myocard_weight = 3
+    ejection_fraction = 0.6
+    myocard_weight = 100
     
     return ejection_fraction, myocard_weight
 
