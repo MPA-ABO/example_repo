@@ -58,6 +58,17 @@ def hausdorff(gt1, gt2, res1, res2):
         
         hausdorffs.append(hausdorff_distance(gt1[z, ...], res1[z, ...]))
         hausdorffs.append(hausdorff_distance(gt2[z, ...], res2[z, ...]))
+        
+    
+    # A  = A.astype(np.dtype('uint8'))
+    # A_ctr = A - cv2.dilate(A, cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(3,3)) )
+    # distA = cv2.distanceTransform(255-A_ctr, cv2.DIST_L2, 3)
+    
+    # B  = B.astype(np.dtype('uint8'))
+    # B_ctr = B - cv2.dilate(B, cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(3,3)) )
+    # distB = cv2.distanceTransform(255-B_ctr, cv2.DIST_L2, 3)
+    
+    # HD = np.maximum(np.mean(distA[B_ctr>0]), np.mean(distB[C_ctr>0]))      
     
     return np.mean(hausdorffs)
 
