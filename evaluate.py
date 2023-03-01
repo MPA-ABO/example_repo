@@ -4,6 +4,7 @@ import numpy as np
 import yaml
 import os
 import json
+import csv
 
 from skimage.metrics import peak_signal_noise_ratio
 from skimage.metrics import structural_similarity
@@ -147,13 +148,21 @@ if __name__ == "__main__":
         
     results_mean = results.copy()
     for key in results_mean:
-        results_mean[key] = np.mean(results_mean[key])
+        results_mean[key] = np.round(np.mean(results_mean[key]), 4)
         
     print(results_mean)
         
         
     with open('results_mean.json', 'w') as json_file:
         json.dump(results_mean, json_file, indent = 6)
+        
+    with open('results_mean.csv', 'w') as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=list(results_mean.keys()))
+        writer.writeheader()
+        writer.writerows([results_mean])
     
     with open('results.json', 'w') as json_file:
         json.dump(results, json_file, indent = 6)
+        
+        
+        
