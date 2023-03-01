@@ -1,7 +1,0 @@
-numpy==1.24.2
-matplotlib==3.7.0
-spyder==5.4.2
-scikit-image==0.19.3
-SimpleITK==2.2.1
-napari[all]
-

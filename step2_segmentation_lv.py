@@ -7,11 +7,12 @@ import os
 from evaluate import DICE, hausdorff
 from evaluate import read2np
 from load_data import load_data
+from scipy.ndimage import label
 
-def step2_segmentation(data_tzxy_np_restored, info):
+def step2_segmentation_lv(data_tzxy_np_restored, info):
     '''
     This is function segmentation .... It should also detect systolic and diastolic 
-    frame and return those frames and coresponding segmentattion mask.
+    frame and return those frames and coresponding segmentattion masks.
 
     Parameters
     ----------
@@ -25,11 +26,11 @@ def step2_segmentation(data_tzxy_np_restored, info):
     ED_data_zxy_np : numpy array with np.float64 dtype, axis order zxy
         3D data at time of detected end-diastole.
     ES_data_zxy_np : numpy array with np.float64 dtype, axis order zxy
-        3D data at time of detected end-sysstole.
-    ED_mask_zxy_np : numpy array with bool dtype, axis order zxy
-        3D segmentation mask at time of detected end-diastole - coresponding to ED_data_zxy_np.
-    ES_mask_zxy_np : numpy array with bool dtype, axis order zxy
-        3D data at time of detected end-sysstole - coresponding to ED_data_zxy_np.
+        3D data at time of detected end-systole.
+    ED_mask_lv_zxy_np : numpy array with bool dtype, axis order zxy
+        3D segmentation mask of left ventricle (LV) at time of detected end-diastole - coresponding to ED_data_zxy_np.
+    ES_mask_lv_zxy_np : numpy array with bool dtype, axis order zxy
+        3D segmentation mask of left ventricle (LV) at time of detected end-systole - coresponding to ES_data_zxy_np.
     info : any data type
         custom set of required values required for next step and metadata.
     '''
@@ -38,10 +39,10 @@ def step2_segmentation(data_tzxy_np_restored, info):
     ED_data_zxy_np = data_tzxy_np_restored[0,...]
     ES_data_zxy_np = data_tzxy_np_restored[-5,...]
     
-    ED_mask_zxy_np = ED_data_zxy_np > 200
-    ES_mask_zxy_np = ES_data_zxy_np > 200
+    ED_mask_lv_zxy_np = label(ED_data_zxy_np > 200)[0] == 52
+    ES_mask_lv_zxy_np = label(ES_data_zxy_np > 200)[0] == 57
     
-    return ED_data_zxy_np, ES_data_zxy_np, ED_mask_zxy_np, ES_mask_zxy_np, info
+    return ED_data_zxy_np, ES_data_zxy_np, ED_mask_lv_zxy_np, ES_mask_lv_zxy_np, info
 
 
 
@@ -57,26 +58,26 @@ if __name__ == "__main__":
     data_tzxy_np_restored_gt = read2np(fname.replace('4d_noisy.nii.gz', '4d.nii.gz'))
     ED_data_zxy_np_gt = read2np(fname.replace('4d_noisy.nii.gz','') + 'frame' + str(info_cfg['ED']).zfill(2) + '.nii.gz')
     ES_data_zxy_np_gt = read2np(fname.replace('4d_noisy.nii.gz','') + 'frame' + str(info_cfg['ES']).zfill(2) + '.nii.gz')
-    ED_mask_zxy_np_gt = read2np(fname.replace('4d_noisy.nii.gz','') + 'frame' + str(info_cfg['ED']).zfill(2) + '_gt.nii.gz') == 3
-    ES_mask_zxy_np_gt = read2np(fname.replace('4d_noisy.nii.gz','') + 'frame' + str(info_cfg['ES']).zfill(2) + '_gt.nii.gz') == 3
+    ED_mask_lv_zxy_np_gt = read2np(fname.replace('4d_noisy.nii.gz','') + 'frame' + str(info_cfg['ED']).zfill(2) + '_gt.nii.gz') == 3
+    ES_mask_lv_zxy_np_gt = read2np(fname.replace('4d_noisy.nii.gz','') + 'frame' + str(info_cfg['ES']).zfill(2) + '_gt.nii.gz') == 3
     
-    ED_data_zxy_np, ES_data_zxy_np, ED_mask_zxy_np, ES_mask_zxy_np, info = step2_segmentation(data_tzxy_np_restored_gt, info)
+    ED_data_zxy_np, ES_data_zxy_np, ED_mask_lv_zxy_np, ES_mask_lv_zxy_np, info = step2_segmentation_lv(data_tzxy_np_restored_gt, info)
      
     v = napari.Viewer()
     datalayer = v.add_image(ES_data_zxy_np, name='data')
     datalayer.blending = 'additive'
     datalayer.colormap = 'gray'
-    gtlayer = v.add_image(ES_mask_zxy_np_gt, name='gt')
+    gtlayer = v.add_image(ES_mask_lv_zxy_np_gt, name='gt')
     gtlayer.colormap = 'green'
     gtlayer.blending = 'additive'
-    reslayer = v.add_image(ES_mask_zxy_np, name='res')
+    reslayer = v.add_image(ES_mask_lv_zxy_np, name='resES')
     reslayer.colormap = 'magenta'
     reslayer.blending = 'additive'
     napari.run()
     
     
-    print('DICE: ' + str(DICE(ED_mask_zxy_np, ES_mask_zxy_np, ED_mask_zxy_np_gt, ES_mask_zxy_np_gt)))
-    print('DICE: ' + str(hausdorff(ED_mask_zxy_np, ES_mask_zxy_np, ED_mask_zxy_np_gt, ES_mask_zxy_np_gt)))
+    print('DICE: ' + str(DICE(ED_mask_lv_zxy_np, ES_mask_lv_zxy_np, ED_mask_lv_zxy_np_gt, ES_mask_lv_zxy_np_gt)))
+    print('Haussdorff: ' + str(hausdorff(ED_mask_lv_zxy_np, ES_mask_lv_zxy_np, ED_mask_lv_zxy_np_gt, ES_mask_lv_zxy_np_gt)))
     
     
     
