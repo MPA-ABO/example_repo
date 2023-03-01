@@ -1,3 +1,4 @@
 # example_repo
 Example repository for MPA-ABO project.
-1.  
+
+1. `git clone`
