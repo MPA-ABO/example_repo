@@ -68,7 +68,7 @@ def hausdorff(gt1, gt2, res1, res2):
     # B_ctr = B - cv2.dilate(B, cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(3,3)) )
     # distB = cv2.distanceTransform(255-B_ctr, cv2.DIST_L2, 3)
     
-    # HD = np.maximum(np.mean(distA[B_ctr>0]), np.mean(distB[C_ctr>0]))      
+    # HD = np.maximum(np.mean(distA[B_ctr>0]), np.mean(distB[A_ctr>0]))      
     
     return np.mean(hausdorffs)
 
