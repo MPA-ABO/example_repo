@@ -9,8 +9,9 @@ from step4_analysis import step4_analysis
 
 if __name__ == "__main__":
     
+    fname = '../DataABO/patient061/patient061_4d.nii.gz'
     
-    data_tzxy_np, info  = load_data('../DataABO/patient061/patient061_4d.nii.gz')
+    data_tzxy_np, info  = load_data(fname)
     
     data_tzxy_np_restored, info = step1_restoration(data_tzxy_np, info)
     
@@ -20,5 +21,5 @@ if __name__ == "__main__":
     
     ejection_fraction, myocard_weight = step4_analysis(ED_mask_lv_zxy_np, ES_mask_lv_zxy_np, ED_mask_myo_zxy_np, info)
     
-    print(f"Ejection fraction = {ejection_fraction} %\nMyocard weight = {myocard_weight} g")
+    print(f'Ejection fraction = {ejection_fraction} %\nMyocard weight = {myocard_weight} g')
     

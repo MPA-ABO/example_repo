@@ -1,5 +1,4 @@
 import napari
-import numpy as np
 import yaml
 import os
 
@@ -11,8 +10,8 @@ from scipy.ndimage import label
 
 def step2_segmentation_lv(data_tzxy_np_restored, info):
     '''
-    This is function segmentation .... It should also detect systolic and diastolic 
-    frame and return those frames and coresponding segmentattion masks.
+    This is function for segmentation of left ventricle. It should also detect
+    systolic and diastolic frame and return those frames and corresponding segmentation masks.
 
     Parameters
     ----------
@@ -28,9 +27,9 @@ def step2_segmentation_lv(data_tzxy_np_restored, info):
     ES_data_zxy_np : numpy array with np.float64 dtype, axis order zxy
         3D data at time of detected end-systole.
     ED_mask_lv_zxy_np : numpy array with bool dtype, axis order zxy
-        3D segmentation mask of left ventricle (LV) at time of detected end-diastole - coresponding to ED_data_zxy_np.
+        3D segmentation mask of left ventricle (LV) at time of detected end-diastole - corresponding to ED_data_zxy_np.
     ES_mask_lv_zxy_np : numpy array with bool dtype, axis order zxy
-        3D segmentation mask of left ventricle (LV) at time of detected end-systole - coresponding to ES_data_zxy_np.
+        3D segmentation mask of left ventricle (LV) at time of detected end-systole - corresponding to ES_data_zxy_np.
     info : any data type
         custom set of required values required for next step and metadata.
     '''
@@ -76,8 +75,8 @@ if __name__ == "__main__":
     napari.run()
     
     
-    print('DICE: ' + str(DICE(ED_mask_lv_zxy_np, ES_mask_lv_zxy_np, ED_mask_lv_zxy_np_gt, ES_mask_lv_zxy_np_gt)))
-    print('Haussdorff: ' + str(hausdorff(ED_mask_lv_zxy_np, ES_mask_lv_zxy_np, ED_mask_lv_zxy_np_gt, ES_mask_lv_zxy_np_gt)))
+    print('Dice coefficient: ' + str(DICE(ED_mask_lv_zxy_np, ES_mask_lv_zxy_np, ED_mask_lv_zxy_np_gt, ES_mask_lv_zxy_np_gt)))
+    print('Hausdorff distance: ' + str(hausdorff(ED_mask_lv_zxy_np, ES_mask_lv_zxy_np, ED_mask_lv_zxy_np_gt, ES_mask_lv_zxy_np_gt)))
     
     
     

@@ -1,5 +1,4 @@
 import napari
-import numpy as np
 import yaml
 import os
 
@@ -12,22 +11,22 @@ from skimage.morphology import binary_dilation, disk
 
 def step3_segmentation_myo(ED_data_zxy_np, ED_mask_lv_zxy_np, info):
     '''
-    This is function segmentation .... It should also detect systolic and diastolic 
-    frame and return those frames and coresponding segmentattion mask.
+    This is function for segmentation of myocard in end-diastolic frame.
+    It should return corresponding segmentation mask.
 
     Parameters
     ----------
     ED_data_zxy_np : numpy array with np.float64 dtype, axis order zxy
         3D data at time of detected end-diastole.
     ED_mask_lv_zxy_np : numpy array with bool dtype, axis order zxy
-        3D segmentation mask of left ventricle (LV) at time of detected end-diastole - coresponding to ED_data_zxy_np.
+        3D segmentation mask of left ventricle (LV) at time of detected end-diastole - corresponding to ED_data_zxy_np.
     info : any data type
         custom set of required values and metadata.
 
     Returns
     -------
     ED_mask_myo_zxy_np : numpy array with bool dtype, axis order zxy
-        3D segmentation mask at time of detected end-diastole - coresponding to ED_data_zxy_np.
+        3D segmentation mask of myocard at time of detected end-diastole - corresponding to ED_data_zxy_np.
     info : any data type
         custom set of required values required for next step and metadata.
     '''
@@ -72,12 +71,6 @@ if __name__ == "__main__":
     napari.run()
     
     
-    print('DICE: ' + str(DICE(ED_mask_myo_zxy_np, ED_mask_myo_zxy_np_gt)))
-    print('Haussdorff: ' + str(hausdorff(ED_mask_myo_zxy_np, ED_mask_myo_zxy_np_gt)))
-    
-    
-    
-    
-    
-    
+    print('Dice coefficient: ' + str(DICE(ED_mask_myo_zxy_np, ED_mask_myo_zxy_np_gt)))
+    print('Hausdorff distance: ' + str(hausdorff(ED_mask_myo_zxy_np, ED_mask_myo_zxy_np_gt)))
     

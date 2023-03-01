@@ -4,21 +4,22 @@ import numpy as np
 import yaml
 import os
 import json
-import csv
 
 from skimage.metrics import peak_signal_noise_ratio
 from skimage.metrics import structural_similarity
-
 from skimage.metrics import hausdorff_distance
 
+import pandas as pd
 
 
 
 def PSNR(image_true, image_test):
-    return peak_signal_noise_ratio(image_true, image_test, data_range=1000)
-  
-def SSIM(image_true, image_test):
     
+    return peak_signal_noise_ratio(image_true, image_test, data_range=1000)
+
+
+
+def SSIM(image_true, image_test):
     ssims = []
     for t in range(image_true.shape[0]):
         ssim = structural_similarity(image_true[0, ...], image_test[0, ...], data_range=1000, channel_axis=0)
@@ -38,14 +39,16 @@ def DICE(gt1, res1, gt2=None, res2=None):
     
     return np.sum(seg[gt == True])*2.0 / (np.sum(seg) + np.sum(gt))
     
-    
+
 
 def hausdorff(gt1, res1, gt2=None, res2=None):
     if gt2 is not None:
         hd = (hausdorff_distance(gt1, res1) + hausdorff_distance(gt2, res2)) / 2
     else:
         hd = hausdorff_distance(gt1, res1)
+        
     return hd
+
 
 
 def MAE(gt, res):
@@ -53,13 +56,19 @@ def MAE(gt, res):
     return abs(gt - res)
 
 
+
 def read2np(fname):
+    sitk.ProcessObject_SetGlobalWarningDisplay(False)
+    image_array = sitk.GetArrayFromImage(sitk.ReadImage(fname))
     
-    return sitk.GetArrayFromImage(sitk.ReadImage(fname))
+    return image_array
+
+
 
 def get_resolution(fname):
     
     return sitk.ReadImage(fname).GetSpacing()
+
 
 
 if __name__ == "__main__":
@@ -116,9 +125,9 @@ if __name__ == "__main__":
         voxel_volume = ED_resolution_gt[0] * ED_resolution_gt[1] * ED_resolution_gt[2]  # mm^3
         myocard_weight_gt = np.sum(ED_mask_myo_zxy_np_gt) * voxel_volume * rho
         
-
-        data_tzxy_np, info_orig  = load_data(fname)
+        #TODO info vs. info_orig???
         
+        data_tzxy_np, info_orig  = load_data(fname)
         
         data_tzxy_np_restored, info = step1_restoration(data_tzxy_np, info_orig)
         results["step1_PSNR"].append(PSNR(data_tzxy_np_restored_gt, data_tzxy_np_restored))
@@ -140,29 +149,24 @@ if __name__ == "__main__":
         results["step3_DICE_final"].append(DICE(ED_mask_myo_zxy_np_gt, ED_mask_myo_zxy_np))
         results["step3_Haussdorf_distance_final"].append(hausdorff(ED_mask_myo_zxy_np_gt, ED_mask_myo_zxy_np))
         
-        ejection_fraction, myocard_weight = step4_analysis(ED_mask_lv_zxy_np, ES_mask_lv_zxy_np, ED_mask_myo_zxy_np, info)
+        ejection_fraction, myocard_weight = step4_analysis(ED_mask_lv_zxy_np, ES_mask_lv_zxy_np, ED_mask_myo_zxy_np, info_orig)
         results["step4_MAE_EF"].append(MAE(ejection_fraction_gt, ejection_fraction))
         results["step4_MAE_MW"].append(MAE(myocard_weight_gt, myocard_weight))
-        
-        
-        
+    
+    
+    
     results_mean = results.copy()
     for key in results_mean:
         results_mean[key] = np.round(np.mean(results_mean[key]), 4)
         
-    print(results_mean)
-        
-        
-    with open('results_mean.json', 'w') as json_file:
+    with open("results.json", "w") as json_file:
+        json.dump(results, json_file, indent = 6)
+    
+    with open("results_mean.json", "w") as json_file:
         json.dump(results_mean, json_file, indent = 6)
         
-    with open('results_mean.csv', 'w') as csvfile:
-        writer = csv.DictWriter(csvfile, fieldnames=list(results_mean.keys()))
-        writer.writeheader()
-        writer.writerows([results_mean])
+    data_frame_results_mean = pd.DataFrame(results_mean, index=[0]).T
+    data_frame_results_mean.to_excel("results_mean.xlsx")
     
-    with open('results.json', 'w') as json_file:
-        json.dump(results, json_file, indent = 6)
-        
-        
+    print(data_frame_results_mean)
         
