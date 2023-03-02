@@ -2,14 +2,14 @@ import napari
 import yaml
 import os
 
+import numpy as np
 
 from evaluate import DICE, hausdorff
 from evaluate import read2np
 from load_data import load_data
-from scipy.ndimage import label
-from skimage.morphology import binary_dilation, disk
+from skimage.morphology import disk
 
-def step3_segmentation_myo(ED_data_zxy_np, ED_mask_lv_zxy_np, info):
+def step3_segmentation_myo(ED_data_zxy_np, ED_mask_lv_zxy_np, info=None):
     '''
     This is function for segmentation of myocard in end-diastolic frame.
     It should return corresponding segmentation mask.
@@ -31,13 +31,15 @@ def step3_segmentation_myo(ED_data_zxy_np, ED_mask_lv_zxy_np, info):
         custom set of required values required for next step and metadata.
     '''
     
-    strel = disk(7)
+    strel1 = disk(50)
+    strel2 = 1-disk(40)
+    size_data = np.shape(ED_data_zxy_np)
 
-    ED_mask_myo_zxy_np = ED_mask_lv_zxy_np.copy()
+    ED_mask_myo_zxy_np = np.zeros_like(ED_data_zxy_np)
     for z in range(ED_mask_myo_zxy_np.shape[0]):
-        ED_mask_myo_zxy_np[z, ...] = binary_dilation(ED_mask_myo_zxy_np[z, ...], strel)
+        ED_mask_myo_zxy_np[z, size_data[1] // 2 - 50:size_data[1] // 2 + 51, size_data[2] // 2 - 50:size_data[2] // 2 + 51] = strel1
+        ED_mask_myo_zxy_np[z, size_data[1] // 2 - 40:size_data[1] // 2 + 41, size_data[2] // 2 - 40:size_data[2] // 2 + 41] = strel2
     
-    ED_mask_myo_zxy_np[ED_mask_lv_zxy_np] = 0
     
     return ED_mask_myo_zxy_np, info
 
@@ -65,7 +67,7 @@ if __name__ == "__main__":
     gtlayer = v.add_image(ED_mask_myo_zxy_np_gt, name='gt')
     gtlayer.colormap = 'green'
     gtlayer.blending = 'additive'
-    reslayer = v.add_image(label(ED_mask_myo_zxy_np)[0], name='resED')
+    reslayer = v.add_image(ED_mask_myo_zxy_np, name='resED')
     reslayer.colormap = 'magenta'
     reslayer.blending = 'additive'
     napari.run()

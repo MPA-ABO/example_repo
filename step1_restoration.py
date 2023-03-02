@@ -4,9 +4,9 @@ import numpy as np
 from load_data import load_data
 from evaluate import PSNR, SSIM
 
-from scipy.ndimage import median_filter
+from scipy.ndimage import convolve
 
-def step1_restoration(data_tzxy_np, info):
+def step1_restoration(data_tzxy_np, info=None):
     '''
     This is function for preprocessing of 4D data. It should remove bias and noise.
     
@@ -27,7 +27,7 @@ def step1_restoration(data_tzxy_np, info):
     
     data_tzxy_np_restored = np.zeros_like(data_tzxy_np)
     for t in range(data_tzxy_np.shape[0]):
-        data_tzxy_np_restored[t, ...] = median_filter(data_tzxy_np[t, ...], [1, 5, 5])
+        data_tzxy_np_restored[t, ...] = convolve(data_tzxy_np[t, ...], np.array([[[1]]]))
     
     return data_tzxy_np_restored, info
 

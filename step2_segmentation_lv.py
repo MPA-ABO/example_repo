@@ -8,7 +8,7 @@ from evaluate import read2np
 from load_data import load_data
 from scipy.ndimage import label
 
-def step2_segmentation_lv(data_tzxy_np_restored, info):
+def step2_segmentation_lv(data_tzxy_np_restored, info=None):
     '''
     This is function for segmentation of left ventricle. It should also detect
     systolic and diastolic frame and return those frames and corresponding segmentation masks.

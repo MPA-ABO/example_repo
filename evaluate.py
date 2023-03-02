@@ -51,7 +51,7 @@ def hausdorff(gt1, res1, gt2=None, res2=None):
 
 
 
-def MAE(gt, res):
+def AE(gt, res):
     
     return abs(gt - res)
 
@@ -99,8 +99,8 @@ if __name__ == "__main__":
     results["step3_DICE_final"] = []
     results["step3_Haussdorf_distance_final"] = []
     
-    results["step4_MAE_EF"] = []
-    results["step4_MAE_MW"] = []
+    results["step4_AE_EF"] = []
+    results["step4_AE_MW"] = []
     
     for fnum, fname in enumerate(fnames):
         
@@ -125,8 +125,6 @@ if __name__ == "__main__":
         voxel_volume = ED_resolution_gt[0] * ED_resolution_gt[1] * ED_resolution_gt[2]  # mm^3
         myocard_weight_gt = np.sum(ED_mask_myo_zxy_np_gt) * voxel_volume * rho
         
-        #TODO info vs. info_orig???
-        
         data_tzxy_np, info_orig  = load_data(fname)
         
         data_tzxy_np_restored, info = step1_restoration(data_tzxy_np, info_orig)
@@ -150,8 +148,8 @@ if __name__ == "__main__":
         results["step3_Haussdorf_distance_final"].append(hausdorff(ED_mask_myo_zxy_np_gt, ED_mask_myo_zxy_np))
         
         ejection_fraction, myocard_weight = step4_analysis(ED_mask_lv_zxy_np, ES_mask_lv_zxy_np, ED_mask_myo_zxy_np, info_orig)
-        results["step4_MAE_EF"].append(MAE(ejection_fraction_gt, ejection_fraction))
-        results["step4_MAE_MW"].append(MAE(myocard_weight_gt, myocard_weight))
+        results["step4_AE_EF"].append(AE(ejection_fraction_gt, ejection_fraction))
+        results["step4_AE_MW"].append(AE(myocard_weight_gt, myocard_weight))
     
     
     

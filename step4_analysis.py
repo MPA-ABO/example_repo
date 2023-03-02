@@ -4,9 +4,9 @@ import os
 import numpy as np
 
 from load_data import load_data
-from evaluate import MAE, read2np, get_resolution
+from evaluate import AE, read2np, get_resolution
 
-def step4_analysis(ED_mask_lv_zxy_np, ES_mask_lv_zxy_np, ED_mask_myo_zxy_np, info):
+def step4_analysis(ED_mask_lv_zxy_np, ES_mask_lv_zxy_np, ED_mask_myo_zxy_np, info=None):
     '''
     This function is for extraction of required values for analysis of heart.
     It shoud measure ejection fraction and myocard weight. It can use semgentation masks 
@@ -61,5 +61,5 @@ if __name__ == "__main__":
     
     ejection_fraction, myocard_weight = step4_analysis(ED_mask_lv_zxy_np_gt, ES_mask_lv_zxy_np_gt, ED_mask_myo_zxy_np_gt, info)
     
-    print('Mean Absoulte Error - Ejection Fraction: ' + str(MAE(ejection_fraction_gt, ejection_fraction)) + ' %')
-    print('Mean Absoulte Error - Myocardial Weight: ' + str(MAE(myocard_weight_gt, myocard_weight)) + ' g')
+    print('Absoulte Error - Ejection Fraction: ' + str(AE(ejection_fraction_gt, ejection_fraction)) + ' %')
+    print('Absoulte Error - Myocardial Weight: ' + str(AE(myocard_weight_gt, myocard_weight)) + ' g')
